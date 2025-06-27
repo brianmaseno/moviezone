@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { 
   Film, 
@@ -117,7 +118,7 @@ const Footer = () => {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="flex space-x-4"
             >
-              {socialLinks.map((social, index) => (
+              {socialLinks.map((social) => (
                 <motion.a
                   key={social.label}
                   href={social.href}
@@ -194,9 +195,11 @@ const Footer = () => {
                 rel="noopener noreferrer"
                 className="flex items-center space-x-2 hover:text-white transition-colors duration-200"
               >
-                <img
+                <Image
                   src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb6f8a62a4c6bc55cd9ba82bb2cd95f6c.svg"
                   alt="TMDB"
+                  width={64}
+                  height={16}
                   className="h-4"
                 />
                 <span>The Movie Database</span>

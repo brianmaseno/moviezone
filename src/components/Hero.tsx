@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Info, Star, Calendar, Clock } from 'lucide-react';
-import { Movie, TVShow, getImageUrl, formatVoteAverage, formatReleaseDate } from '@/lib/tmdb';
+import { Play, Info, Star, Calendar } from 'lucide-react';
+import { Movie, TVShow, getImageUrl, formatVoteAverage } from '@/lib/tmdb';
 import { cn } from '@/lib/utils';
 
 interface HeroProps {

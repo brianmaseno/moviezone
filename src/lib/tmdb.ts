@@ -32,7 +32,104 @@ export const IMAGE_SIZES = {
   },
 };
 
-// Types
+// Types for API responses
+export interface Genre {
+  id: number;
+  name: string;
+}
+
+export interface ProductionCompany {
+  id: number;
+  name: string;
+  logo_path: string;
+  origin_country: string;
+}
+
+export interface SpokenLanguage {
+  english_name: string;
+  iso_639_1: string;
+  name: string;
+}
+
+export interface Episode {
+  id: number;
+  name: string;
+  overview: string;
+  vote_average: number;
+  vote_count: number;
+  air_date: string;
+  episode_number: number;
+  production_code: string;
+  runtime: number;
+  season_number: number;
+  still_path: string | null;
+}
+
+export interface Season {
+  id: number;
+  name: string;
+  overview: string;
+  air_date: string;
+  episode_count: number;
+  poster_path: string | null;
+  season_number: number;
+  episodes: Episode[];
+}
+
+export interface NextEpisodeToAir {
+  id: number;
+  name: string;
+  overview: string;
+  vote_average: number;
+  vote_count: number;
+  air_date: string;
+  episode_number: number;
+  production_code: string;
+  runtime: number;
+  season_number: number;
+  still_path: string | null;
+}
+
+export interface Cast {
+  id: number;
+  name: string;
+  character: string;
+  profile_path: string | null;
+  order: number;
+}
+
+export interface Crew {
+  id: number;
+  name: string;
+  job: string;
+  department: string;
+  profile_path: string | null;
+}
+
+export interface Credits {
+  id: number;
+  cast: Cast[];
+  crew: Crew[];
+}
+
+export interface Video {
+  id: string;
+  iso_639_1: string;
+  iso_3166_1: string;
+  key: string;
+  name: string;
+  site: string;
+  size: number;
+  type: string;
+  official: boolean;
+  published_at: string;
+}
+
+export interface VideosResponse {
+  id: number;
+  results: Video[];
+}
+
 export interface Movie {
   id: number;
   title: string;
@@ -115,7 +212,7 @@ export interface TVShowDetails extends TVShow {
   status: string;
   tagline: string;
   last_air_date: string;
-  next_episode_to_air: any;
+  next_episode_to_air: NextEpisodeToAir | null;
   in_production: boolean;
 }
 
@@ -164,11 +261,11 @@ class TMDBService {
   }
 
   async getMovieCredits(id: number) {
-    return this.request<any>(`/movie/${id}/credits`);
+    return this.request<Credits>(`/movie/${id}/credits`);
   }
 
   async getMovieVideos(id: number) {
-    return this.request<any>(`/movie/${id}/videos`);
+    return this.request<VideosResponse>(`/movie/${id}/videos`);
   }
 
   async getSimilarMovies(id: number) {
@@ -209,11 +306,11 @@ class TMDBService {
   }
 
   async getTVShowCredits(id: number) {
-    return this.request<any>(`/tv/${id}/credits`);
+    return this.request<Credits>(`/tv/${id}/credits`);
   }
 
   async getTVShowVideos(id: number) {
-    return this.request<any>(`/tv/${id}/videos`);
+    return this.request<VideosResponse>(`/tv/${id}/videos`);
   }
 
   async getSimilarTVShows(id: number) {
@@ -225,7 +322,7 @@ class TMDBService {
   }
 
   async getTVShowSeason(id: number, seasonNumber: number) {
-    return this.request<any>(`/tv/${id}/season/${seasonNumber}`);
+    return this.request<Season>(`/tv/${id}/season/${seasonNumber}`);
   }
 
   // Search endpoints

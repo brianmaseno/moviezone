@@ -2,8 +2,9 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { Play, Plus, Star, Calendar, Info } from 'lucide-react';
+import { Play, Plus, Star, Calendar } from 'lucide-react';
 import { Movie, TVShow, getImageUrl, formatVoteAverage } from '@/lib/tmdb';
 import { cn } from '@/lib/utils';
 
@@ -68,15 +69,17 @@ const MovieCard: React.FC<MovieCardProps> = ({
           {/* Poster Image */}
           <div className="relative w-full h-full">
             {!imageError ? (
-              <img
+              <Image
                 src={getImageUrl(item.poster_path, 'w500')}
                 alt={getTitle(item)}
+                fill
                 className={cn(
-                  "w-full h-full object-cover transition-opacity duration-300",
+                  "object-cover transition-opacity duration-300",
                   imageLoaded ? 'opacity-100' : 'opacity-0'
                 )}
                 onLoad={() => setImageLoaded(true)}
                 onError={() => setImageError(true)}
+                sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
               />
             ) : (
               <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">

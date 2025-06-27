@@ -4,9 +4,7 @@ import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Play, 
-  Pause, 
   Volume2, 
-  VolumeX, 
   Maximize, 
   Minimize, 
   SkipBack, 
@@ -40,7 +38,7 @@ const StreamingPlayer: React.FC<StreamingPlayerProps> = ({
   const [showControls, setShowControls] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const playerRef = useRef<HTMLDivElement>(null);
-  const controlsTimeoutRef = useRef<NodeJS.Timeout>();
+  const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const streamingUrl = getStreamingUrl(type, id, season, episode);
 

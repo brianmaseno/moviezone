@@ -1,6 +1,6 @@
 import React from 'react';
 import MovieCarousel from '@/components/MovieCarousel';
-import Loading, { CarouselSkeleton } from '@/components/Loading';
+import { CarouselSkeleton } from '@/components/Loading';
 import { tmdbService } from '@/lib/tmdb';
 
 export default async function MoviesPage() {

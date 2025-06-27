@@ -5,18 +5,19 @@ import { useParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Play, 
-  Plus, 
   Star, 
   Calendar, 
   Clock, 
   Globe,
   Heart,
-  Share,
-  Download,
-  Info
+  Share
 } from 'lucide-react';
 import { 
   MovieDetails, 
+  Movie,
+  Cast,
+  Crew,
+  Credits,
   tmdbService, 
   getImageUrl, 
   formatVoteAverage, 
@@ -26,15 +27,16 @@ import {
 import MovieCarousel from '@/components/MovieCarousel';
 import StreamingPlayer from '@/components/StreamingPlayer';
 import Loading from '@/components/Loading';
+import Image from 'next/image';
 
 export default function MovieDetailPage() {
   const params = useParams();
   const movieId = Number(params.id);
   
   const [movie, setMovie] = useState<MovieDetails | null>(null);
-  const [similarMovies, setSimilarMovies] = useState<any[]>([]);
-  const [recommendedMovies, setRecommendedMovies] = useState<any[]>([]);
-  const [credits, setCredits] = useState<any>(null);
+  const [similarMovies, setSimilarMovies] = useState<Movie[]>([]);
+  const [recommendedMovies, setRecommendedMovies] = useState<Movie[]>([]);
+  const [credits, setCredits] = useState<Credits | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showPlayer, setShowPlayer] = useState(false);
@@ -91,7 +93,7 @@ export default function MovieDetailPage() {
     );
   }
 
-  const director = credits?.crew?.find((person: any) => person.job === 'Director');
+  const director = credits?.crew?.find((person: Crew) => person.job === 'Director');
   const mainCast = credits?.cast?.slice(0, 6) || [];
 
   return (
@@ -120,9 +122,11 @@ export default function MovieDetailPage() {
                   transition={{ duration: 0.8 }}
                   className="hidden md:block"
                 >
-                  <img
+                  <Image
                     src={getImageUrl(movie.poster_path, 'w500')}
                     alt={movie.title}
+                    width={400}
+                    height={600}
                     className="w-full max-w-sm mx-auto rounded-xl shadow-2xl"
                   />
                 </motion.div>
@@ -195,7 +199,7 @@ export default function MovieDetailPage() {
                       transition={{ duration: 0.8, delay: 0.6 }}
                       className="text-xl text-gray-300 italic"
                     >
-                      "{movie.tagline}"
+                      &quot;{movie.tagline}&quot;
                     </motion.p>
                   )}
 
@@ -266,7 +270,7 @@ export default function MovieDetailPage() {
                       <div>
                         <h3 className="text-white font-semibold mb-2">Starring</h3>
                         <p className="text-gray-300">
-                          {mainCast.map((actor: any) => actor.name).join(', ')}
+                          {mainCast.map((actor: Cast) => actor.name).join(', ')}
                         </p>
                       </div>
                     )}

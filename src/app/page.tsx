@@ -1,7 +1,7 @@
 import React from 'react';
 import Hero from '@/components/Hero';
 import MovieCarousel from '@/components/MovieCarousel';
-import Loading, { HeroSkeleton, CarouselSkeleton } from '@/components/Loading';
+import { HeroSkeleton, CarouselSkeleton } from '@/components/Loading';
 import { tmdbService } from '@/lib/tmdb';
 
 export default async function Home() {

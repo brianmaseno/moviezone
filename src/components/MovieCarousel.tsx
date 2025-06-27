@@ -136,8 +136,7 @@ const MovieCarousel: React.FC<MovieCarouselProps> = ({
           className="flex space-x-4 overflow-x-auto scrollbar-hide pb-4"
           style={{
             scrollbarWidth: 'none',
-            msOverflowStyle: 'none',
-            WebkitScrollbar: { display: 'none' }
+            msOverflowStyle: 'none'
           }}
         >
           {items.map((item, index) => (
@@ -163,10 +162,10 @@ const MovieCarousel: React.FC<MovieCarouselProps> = ({
 
       {/* Progress Indicator */}
       <div className="mt-4 h-1 bg-white/10 rounded-full overflow-hidden">
-        <motion.div
+        <motion.div 
           className="h-full bg-red-600 rounded-full"
           initial={{ width: '0%' }}
-          animate={{ width: `${((scrollContainerRef.current?.scrollLeft || 0) / ((scrollContainerRef.current?.scrollWidth || 1) - (scrollContainerRef.current?.clientWidth || 0))) * 100}%` }}
+          animate={{ width: '0%' }}
           transition={{ duration: 0.2 }}
         />
       </div>

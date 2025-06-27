@@ -13,8 +13,7 @@ import {
   TrendingUp, 
   Star, 
   Home,
-  User,
-  Settings
+  User
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
