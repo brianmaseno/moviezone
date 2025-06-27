@@ -1,103 +1,116 @@
-import Image from "next/image";
+import React from 'react';
+import Hero from '@/components/Hero';
+import MovieCarousel from '@/components/MovieCarousel';
+import Loading, { HeroSkeleton, CarouselSkeleton } from '@/components/Loading';
+import { tmdbService } from '@/lib/tmdb';
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+export default async function Home() {
+  try {
+    // Fetch data for all sections
+    const [
+      trendingMovies,
+      popularMovies,
+      topRatedMovies,
+      upcomingMovies,
+      trendingTVShows,
+      popularTVShows,
+      topRatedTVShows
+    ] = await Promise.all([
+      tmdbService.getTrendingMovies('week'),
+      tmdbService.getPopularMovies(),
+      tmdbService.getTopRatedMovies(),
+      tmdbService.getUpcomingMovies(),
+      tmdbService.getTrendingTVShows('week'),
+      tmdbService.getPopularTVShows(),
+      tmdbService.getTopRatedTVShows()
+    ]);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+    // Get hero items (trending movies for hero section)
+    const heroItems = trendingMovies.results.slice(0, 5);
+
+    return (
+      <div className="min-h-screen bg-black">
+        {/* Hero Section */}
+        <Hero items={heroItems} type="movie" />
+
+        {/* Content Sections */}
+        <div className="relative z-10 space-y-16 py-16 bg-gradient-to-b from-transparent via-black to-black">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+            
+            {/* Trending Movies */}
+            <MovieCarousel
+              title="Trending Movies"
+              items={trendingMovies.results.slice(5, 25)}
+              type="movie"
+              cardSize="medium"
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+
+            {/* Popular TV Shows */}
+            <MovieCarousel
+              title="Popular TV Shows"
+              items={popularTVShows.results.slice(0, 20)}
+              type="tv"
+              cardSize="medium"
+            />
+
+            {/* Top Rated Movies */}
+            <MovieCarousel
+              title="Top Rated Movies"
+              items={topRatedMovies.results.slice(0, 20)}
+              type="movie"
+              cardSize="medium"
+            />
+
+            {/* Trending TV Shows */}
+            <MovieCarousel
+              title="Trending TV Shows"
+              items={trendingTVShows.results.slice(0, 20)}
+              type="tv"
+              cardSize="medium"
+            />
+
+            {/* Popular Movies */}
+            <MovieCarousel
+              title="Popular Movies"
+              items={popularMovies.results.slice(0, 20)}
+              type="movie"
+              cardSize="medium"
+            />
+
+            {/* Top Rated TV Shows */}
+            <MovieCarousel
+              title="Top Rated TV Shows"
+              items={topRatedTVShows.results.slice(0, 20)}
+              type="tv"
+              cardSize="medium"
+            />
+
+            {/* Upcoming Movies */}
+            <MovieCarousel
+              title="Coming Soon"
+              items={upcomingMovies.results.slice(0, 20)}
+              type="movie"
+              cardSize="medium"
+            />
+
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+      </div>
+    );
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    
+    return (
+      <div className="min-h-screen bg-black">
+        <HeroSkeleton />
+        <div className="relative z-10 space-y-16 py-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <CarouselSkeleton key={i} />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 }
