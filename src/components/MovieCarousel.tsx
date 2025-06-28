@@ -160,7 +160,7 @@ const MovieCarousel: React.FC<MovieCarouselProps> = ({
         <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-black/50 to-transparent pointer-events-none" />
       </div>
 
-      {/* Progress Indicator */}
+      {/* Progress Indicator - Deployment Fix */}
       <div className="mt-4 h-1 bg-white/10 rounded-full overflow-hidden">
         <motion.div 
           className="h-full bg-red-600 rounded-full"
