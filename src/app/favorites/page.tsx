@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Heart, Trash2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -13,15 +13,7 @@ const FavoritesPage = () => {
   const [favorites, setFavorites] = useState<Favorite[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    if (user) {
-      loadFavorites();
-    } else {
-      setIsLoading(false);
-    }
-  }, [user]);
-
-  const loadFavorites = async () => {
+  const loadFavorites = useCallback(async () => {
     if (!user?._id) return;
 
     try {
@@ -35,7 +27,15 @@ const FavoritesPage = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      loadFavorites();
+    } else {
+      setIsLoading(false);
+    }
+  }, [user, loadFavorites]);
 
   const removeFavorite = async (movieId: number, mediaType: 'movie' | 'tv') => {
     if (!user?._id) return;

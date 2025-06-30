@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Filter, Grid, List } from 'lucide-react';
 import { Movie, TVShow, Genre, tmdbService } from '@/lib/tmdb';
@@ -22,19 +22,7 @@ const GenresPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
 
-  // Load genres on component mount and when media type changes
-  useEffect(() => {
-    loadGenres();
-  }, [mediaType]);
-
-  // Load items when genre is selected
-  useEffect(() => {
-    if (selectedGenre) {
-      loadGenreItems(1);
-    }
-  }, [selectedGenre, mediaType]);
-
-  const loadGenres = async () => {
+  const loadGenres = useCallback(async () => {
     setIsLoading(true);
     try {
       const data = await withCache(
@@ -43,7 +31,7 @@ const GenresPage = () => {
         CACHE_DURATIONS.MOVIE_DETAILS
       );
       setGenres(data.genres);
-      // Auto-select first genre
+      // Auto-select first genre only if no genre is currently selected
       if (data.genres.length > 0 && !selectedGenre) {
         setSelectedGenre(data.genres[0]);
       }
@@ -52,30 +40,52 @@ const GenresPage = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [mediaType]); // Remove selectedGenre dependency
 
-  const loadGenreItems = async (page: number) => {
+  const loadGenreItems = useCallback(async (page: number) => {
     if (!selectedGenre) return;
     
     setIsLoadingItems(true);
     try {
-      const data = await withCache(
-        `${mediaType}_genre_${selectedGenre.id}_page_${page}`,
-        () => mediaType === 'movie' 
-          ? tmdbService.getMoviesByGenre(selectedGenre.id, page)
-          : tmdbService.getTVShowsByGenre(selectedGenre.id, page),
-        CACHE_DURATIONS.MOVIES
-      );
+      if (mediaType === 'movie') {
+        const data = await withCache(
+          `${mediaType}_genre_${selectedGenre.id}_page_${page}`,
+          () => tmdbService.getMoviesByGenre(selectedGenre.id, page),
+          CACHE_DURATIONS.MOVIES
+        );
+        setItems(prevItems => page === 1 ? data.results : [...prevItems, ...data.results]);
+        setTotalPages(data.total_pages);
+      } else {
+        const data = await withCache(
+          `${mediaType}_genre_${selectedGenre.id}_page_${page}`,
+          () => tmdbService.getTVShowsByGenre(selectedGenre.id, page),
+          CACHE_DURATIONS.TV_SHOWS
+        );
+        setItems(prevItems => page === 1 ? data.results : [...prevItems, ...data.results]);
+        setTotalPages(data.total_pages);
+      }
       
-      setItems(page === 1 ? data.results : [...items, ...data.results]);
-      setTotalPages(data.total_pages);
       setCurrentPage(page);
     } catch (error) {
       console.error('Failed to load genre items:', error);
     } finally {
       setIsLoadingItems(false);
     }
-  };
+  }, [selectedGenre, mediaType]); // Remove items dependency
+
+  // Load genres on component mount and when media type changes
+  useEffect(() => {
+    loadGenres();
+  }, [mediaType, loadGenres]); // Include loadGenres since it's now stable
+
+  // Load items when genre is selected
+  useEffect(() => {
+    if (selectedGenre) {
+      setItems([]); // Clear previous items
+      setCurrentPage(1); // Reset page
+      loadGenreItems(1);
+    }
+  }, [selectedGenre, mediaType, loadGenreItems]); // Include loadGenreItems since it's now stable
 
   const loadMore = () => {
     if (currentPage < totalPages && !isLoadingItems) {
