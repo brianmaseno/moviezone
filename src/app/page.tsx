@@ -1,6 +1,7 @@
 import React from 'react';
 import Hero from '@/components/Hero';
 import MovieCarousel from '@/components/MovieCarousel';
+import ContinueWatching from '@/components/ContinueWatching';
 import { HeroSkeleton, CarouselSkeleton } from '@/components/Loading';
 import { tmdbService } from '@/lib/tmdb';
 
@@ -36,6 +37,9 @@ export default async function Home() {
         {/* Content Sections */}
         <div className="relative z-10 space-y-16 py-16 bg-gradient-to-b from-transparent via-black to-black">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+            
+            {/* Continue Watching */}
+            <ContinueWatching />
             
             {/* Trending Movies */}
             <MovieCarousel

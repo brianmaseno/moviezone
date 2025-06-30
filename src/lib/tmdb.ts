@@ -1,4 +1,4 @@
-// API configuration
+import { withCache, cacheKeys, CACHE_DURATIONS } from './cache';
 export const TMDB_CONFIG = {
   apiKey: process.env.NEXT_PUBLIC_TMDB_API_KEY,
   accessToken: process.env.NEXT_PUBLIC_TMDB_ACCESS_TOKEN,
@@ -237,13 +237,19 @@ class TMDBService {
   }
 
   async getPopularMovies(page: number = 1) {
-    return this.request<{ results: Movie[]; total_pages: number; total_results: number }>
-      (`/movie/popular?page=${page}`);
+    return withCache(
+      cacheKeys.popularMovies(page),
+      () => this.request<{ results: Movie[]; total_pages: number; total_results: number }>(`/movie/popular?page=${page}`),
+      CACHE_DURATIONS.MOVIES
+    );
   }
 
   async getTopRatedMovies(page: number = 1) {
-    return this.request<{ results: Movie[]; total_pages: number; total_results: number }>
-      (`/movie/top_rated?page=${page}`);
+    return withCache(
+      cacheKeys.topRatedMovies(page),
+      () => this.request<{ results: Movie[]; total_pages: number; total_results: number }>(`/movie/top_rated?page=${page}`),
+      CACHE_DURATIONS.MOVIES
+    );
   }
 
   async getUpcomingMovies(page: number = 1) {

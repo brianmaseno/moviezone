@@ -13,15 +13,23 @@ import {
   TrendingUp, 
   Star, 
   Home,
-  User
+  User,
+  LogOut,
+  Heart,
+  Filter
 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
+import AuthModal from './AuthModal';
 
 const Header = () => {
+  const { user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -29,9 +37,20 @@ const Header = () => {
       setIsScrolled(window.scrollY > 50);
     };
 
+    const handleClickOutside = () => {
+      if (showUserMenu) {
+        setShowUserMenu(false);
+      }
+    };
+
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    document.addEventListener('click', handleClickOutside);
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [showUserMenu]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,6 +65,7 @@ const Header = () => {
     { href: '/', label: 'Home', icon: Home },
     { href: '/movies', label: 'Movies', icon: Film },
     { href: '/tv', label: 'TV Shows', icon: Tv },
+    { href: '/genres', label: 'Genres', icon: Filter },
     { href: '/trending', label: 'Trending', icon: TrendingUp },
     { href: '/top-rated', label: 'Top Rated', icon: Star },
   ];
@@ -113,13 +133,60 @@ const Header = () => {
             </motion.button>
 
             {/* User Menu */}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="p-2 text-gray-300 hover:text-white transition-colors duration-200 hover:bg-white/10 rounded-lg"
-            >
-              <User className="w-5 h-5" />
-            </motion.button>
+            <div className="relative">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (user) {
+                    setShowUserMenu(!showUserMenu);
+                  } else {
+                    setShowAuthModal(true);
+                  }
+                }}
+                className="p-2 text-gray-300 hover:text-white transition-colors duration-200 hover:bg-white/10 rounded-lg flex items-center space-x-2"
+              >
+                <User className="w-5 h-5" />
+                {user && (
+                  <span className="hidden sm:block text-sm">
+                    {user.name}
+                  </span>
+                )}
+              </motion.button>
+
+              {/* User Dropdown Menu */}
+              <AnimatePresence>
+                {user && showUserMenu && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    onClick={(e) => e.stopPropagation()}
+                    className="absolute right-0 top-12 bg-gray-900 border border-gray-700 rounded-lg shadow-xl py-2 min-w-48 z-50"
+                  >
+                    <Link
+                      href="/favorites"
+                      onClick={() => setShowUserMenu(false)}
+                      className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-800 transition-colors"
+                    >
+                      <Heart className="w-4 h-4" />
+                      <span>My Favorites</span>
+                    </Link>
+                    <button
+                      onClick={() => {
+                        logout();
+                        setShowUserMenu(false);
+                      }}
+                      className="flex items-center space-x-3 px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-800 transition-colors w-full text-left"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Sign Out</span>
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
 
             {/* Mobile Menu Button */}
             <motion.button
@@ -204,6 +271,9 @@ const Header = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Authentication Modal */}
+      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </motion.header>
   );
 };

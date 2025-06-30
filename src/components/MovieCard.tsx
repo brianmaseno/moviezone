@@ -14,6 +14,7 @@ interface MovieCardProps {
   index?: number;
   size?: 'small' | 'medium' | 'large';
   showDetails?: boolean;
+  watchProgress?: number; // Progress percentage (0-100)
 }
 
 const MovieCard: React.FC<MovieCardProps> = ({ 
@@ -21,7 +22,8 @@ const MovieCard: React.FC<MovieCardProps> = ({
   type, 
   index = 0, 
   size = 'medium',
-  showDetails = true 
+  showDetails = true,
+  watchProgress 
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -174,6 +176,17 @@ const MovieCard: React.FC<MovieCardProps> = ({
                   </div>
                 )}
               </motion.div>
+            )}
+
+            {/* Watch Progress Bar */}
+            {watchProgress && watchProgress > 0 && (
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-600/50">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${watchProgress}%` }}
+                  className="h-full bg-red-500"
+                />
+              </div>
             )}
           </div>
         </div>
